@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
+# Constantes
 url = "https://www.shein.com.co/RecommendSelection/Women-Clothing-sc-017172961.html?adp=&categoryJump=true&ici=co_tab03navbar03&src_identifier=fc%3DWomen%20Clothing%60sc%3DWomen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab03navbar03%60jc%3DitemPicking_017172961&src_module=topcat&src_tab_page_id=page_home1714834898146"
 
 # Realizar una solicitud GET para obtener el contenido de la página web
@@ -9,6 +10,9 @@ response = requests.get(url)
 
 # Verificar si la solicitud fue exitosa (código de estado 200)
 if response.status_code == 200:
+
+    print("VERIFICACION EXITOSA")
+    
     # Extraer el HTML de la respuesta
     html_content = response.content
 
@@ -41,22 +45,26 @@ if response.status_code == 200:
     # Crear una tabla para almacenar los datos si no existe
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY,
-            titulo TEXT,
+            titulo TEXT PRIMARY KEY,
             imagen_url TEXT,
             precio TEXT
         )
     ''')
 
-    # Insertar los datos recolectados en la tabla
+    # Insertar los datos recolectados en la tabla evitando duplicados
     for title, image_url, product in zip(titles, image_urls, origin_prices):
-        cursor.execute('INSERT INTO productos (titulo, imagen_url, precio) VALUES (?, ?, ?)', (title, image_url, product))
+        cursor.execute('SELECT COUNT(*) FROM productos WHERE titulo = ?', (title,))
+        count = cursor.fetchone()[0]
+        if count == 0:
+            cursor.execute('INSERT INTO productos (titulo, imagen_url, precio) VALUES (?, ?, ?)', (title, image_url, product))
+        else:
+            print(f"El producto '{title}' ya existe en la base de datos y no se insertó.")
 
     # Guardar los cambios y cerrar la conexión
     conn.commit()
     conn.close()
 
-    print("Operacion EXITOSA")
+
 
 else:
-    print("Verificación no exitosa")
+    print("VERIFICACION NO EXITOSA")
