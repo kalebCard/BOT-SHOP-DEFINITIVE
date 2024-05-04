@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
-# Constantes
 url = "https://www.shein.com.co/RecommendSelection/Women-Clothing-sc-017172961.html?adp=&categoryJump=true&ici=co_tab03navbar03&src_identifier=fc%3DWomen%20Clothing%60sc%3DWomen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab03navbar03%60jc%3DitemPicking_017172961&src_module=topcat&src_tab_page_id=page_home1714834898146"
 
 # Realizar una solicitud GET para obtener el contenido de la página web
