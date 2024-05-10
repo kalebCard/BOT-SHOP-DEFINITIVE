@@ -21,7 +21,8 @@ class TestWebNavigation(unittest.TestCase):
     def test_web_navigation(self):
         self.start_browser()
         self.open_link()
-        self.clicker()
+        self.close_popups()
+        self.category_selector()
         self.wait_seconds(5)
 
     def start_browser(self):
@@ -42,13 +43,10 @@ class TestWebNavigation(unittest.TestCase):
     def wait_seconds(self, seconds):
         time.sleep(seconds)
         
-    def clicker(self):
-        xpath_list = [
-            ("close_cookie", "//*[@id='onetrust-reject-all-handler']"),
-            ("close_offer", "//*[@class='sui-icon-common__wrap btn-default']"),
-            ("ropa_mujer", "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[3]")
-        ]
-        for element_name, xpath in xpath_list:
+    def close_popups(self):
+        xpath_list = {"close_cookie": "//*[@id='onetrust-reject-all-handler']",
+                    "close_offer": "//*[@class='sui-icon-common__wrap btn-default']"}
+        for element_name, xpath in xpath_list.items():
             try:
                 xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
                 xpath_browser.click()
@@ -56,5 +54,19 @@ class TestWebNavigation(unittest.TestCase):
             except Exception as e:
                 print("Error clicking", element_name, ":", e)
 
+    def category_selector(self):
+        xpath_list= {"ropa_mujer": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[3]",
+                    "ropa_hombre": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[7]"}
+
+        for element_name, xpath in xpath_list.items():
+            try:
+                xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                xpath_browser.click()
+                print("Clicked", element_name)
+                self.wait_seconds(5)
+            except Exception as e:
+                print("Error clicking", element_name, ":", e)
+
 if __name__ == "__main__":
     unittest.main()
+
