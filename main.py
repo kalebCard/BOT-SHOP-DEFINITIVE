@@ -1,5 +1,5 @@
-import unittest
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import unittest
+import sys
 
 class TestWebNavigation(unittest.TestCase):
     def setUp(self):
@@ -26,8 +28,13 @@ class TestWebNavigation(unittest.TestCase):
         chrome_options = Options()
         chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.63 Safari/537.36")
         chrome_options.add_argument("--incognito")
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        self.driver.implicitly_wait(10)
+        
+        try:
+            self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            self.driver.maximize_window()  # Maximizamos la ventana para asegurarnos de que los elementos estén visibles
+        except WebDriverException as e:
+            print("Error al iniciar el navegador:", e)
+            sys.exit(1)
 
     def open_link(self):
         self.driver.get('https://www.shein.com.co/')
@@ -36,17 +43,17 @@ class TestWebNavigation(unittest.TestCase):
         time.sleep(seconds)
         
     def clicker(self):
-        xpath_list=[("close_cookie","//*[@id='onetrust-reject-all-handler']"),("close_offer", "//*[@class='sui-icon-common__wrap btn-default']")]
-        counter=0
-        while counter < 2:
+        xpath_list = [
+            ("close_cookie", "//*[@id='onetrust-reject-all-handler']"),
+            ("close_offer", "//*[@class='sui-icon-common__wrap btn-default']")
+        ]
+        for element_name, xpath in xpath_list:
             try:
-                self.wait_seconds(5)
-                xpath_route = xpath_list[1][counter]  
-                xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath_route)))
+                xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
                 xpath_browser.click()
-            finally:
-                print ("cliker", xpath_list[0][counter])
-                counter+=1
-        
+                print("Clicked", element_name)
+            except Exception as e:
+                print("Error clicking", element_name, ":", e)
+
 if __name__ == "__main__":
     unittest.main()
