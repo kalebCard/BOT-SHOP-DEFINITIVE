@@ -45,7 +45,8 @@ class TestWebNavigation(unittest.TestCase):
     def clicker(self):
         xpath_list = [
             ("close_cookie", "//*[@id='onetrust-reject-all-handler']"),
-            ("close_offer", "//*[@class='sui-icon-common__wrap btn-default']")
+            ("close_offer", "//*[@class='sui-icon-common__wrap btn-default']"),
+            ("ropa_mujer", "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[3]")
         ]
         for element_name, xpath in xpath_list:
             try:
