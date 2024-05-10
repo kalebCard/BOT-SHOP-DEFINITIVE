@@ -13,6 +13,7 @@ import sys
 class TestWebNavigation(unittest.TestCase):
     def setUp(self):
         self.driver = None
+        self.category_option = 1
 
     def tearDown(self):
         if self.driver:
@@ -22,7 +23,7 @@ class TestWebNavigation(unittest.TestCase):
         self.start_browser()
         self.open_link()
         self.close_popups()
-        self.category_selector()
+        self.category_selector(self.category_option)
         self.wait_seconds(5)
 
     def start_browser(self):
@@ -32,7 +33,7 @@ class TestWebNavigation(unittest.TestCase):
         
         try:
             self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            self.driver.maximize_window()  # Maximizamos la ventana para asegurarnos de que los elementos estén visibles
+            self.driver.maximize_window()
         except WebDriverException as e:
             print("Error al iniciar el navegador:", e)
             sys.exit(1)
@@ -54,10 +55,23 @@ class TestWebNavigation(unittest.TestCase):
             except Exception as e:
                 print("Error clicking", element_name, ":", e)
 
-    def category_selector(self):
-        xpath_list= {"ropa_mujer": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[3]",
-                    "ropa_hombre": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[7]"}
+    def category_selector(self, options):
+        xpath_list= {"women_clothing": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[3]",
+                    "men_clothing": "/html/body/div[1]/header/div[3]/div[1]/div/div[3]/nav/div[2]/div/a[7]"}
+        if options == 1:
+            xpath=xpath_list["women_clohting"]
+        elif options == 2:
+            xpath=xpath_list["momen_clohting"]
 
+        try:
+            xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
+            xpath_browser.click()
+            self.wait_seconds(5)
+        except Exception as e:
+            print("Error category selection", ":", e)
+
+    def scrap_page(self):
+        xpath_list= {"url_clothing": "//*[@class='product-card multiple-row-card j-expose__product-item product-item-ccc']"}
         for element_name, xpath in xpath_list.items():
             try:
                 xpath_browser = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -69,4 +83,3 @@ class TestWebNavigation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
